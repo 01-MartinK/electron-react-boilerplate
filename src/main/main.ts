@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, session } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -24,6 +24,12 @@ class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+
+// downloading
+ipcMain.on("download", (event, {payload}) => {
+  // handle download
+  mainWindow?.webContents.downloadURL(payload.url)
+})
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
@@ -127,6 +133,12 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(() => {
+    session.defaultSession.protocol.registerFileProtocol('static', (request, callback) => {
+      const fileUrl = request.url.replace('static://', '');
+      const filePath = path.join(app.getAppPath(), '.webpack/renderer', fileUrl);
+      callback(filePath);
+    })
+
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the

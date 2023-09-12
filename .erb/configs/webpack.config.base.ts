@@ -7,6 +7,19 @@ import TsconfigPathsPlugins from 'tsconfig-paths-webpack-plugin';
 import webpackPaths from './webpack.paths';
 import { dependencies as externals } from '../../release/app/package.json';
 
+import CopyWebpackPlugin from 'copy-webpack-plugin';
+import path from 'path';
+
+const assets = ['assets'];
+const copyPlugins = new CopyWebpackPlugin(
+  {
+    patterns: assets.map((asset) => ({
+      from: path.resolve(__dirname, 'src', asset),
+      to: path.resolve(__dirname, '.webpack/renderer', asset)
+    }))
+  }
+)
+
 const configuration: webpack.Configuration = {
   externals: [...Object.keys(externals || {})],
 

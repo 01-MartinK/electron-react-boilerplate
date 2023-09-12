@@ -1,0 +1,12 @@
+.Store {
+  width: 100%;
+  background: linear-gradient(#757575,#7f8c8d);
+  background-position: center;
+  background-size: contain;
+  .grid {
+    padding: 1em;
+    display: grid;
+    gap: 1em;
+    grid-template-columns: auto auto auto auto;
+  }
+}
